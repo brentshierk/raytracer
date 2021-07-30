@@ -1,6 +1,9 @@
 package mat
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 
 //type Set [4]float64
@@ -86,6 +89,61 @@ func NegateSet(a Set ) Set{
 	zeroSet := Set{}
 	negativeSet := Subtract(zeroSet,a)
 	return negativeSet
+}
+
+func Scaler(value float64,s Set)  Set{
+	newSet := Set{}
+	for i := 0; i <4 ; i++ {
+		newSet[i] = value * s[i]
+	}
+	return newSet
+}
+func DivideSetScaler(value float64, s Set) Set{
+	newSet := Set{}
+	for i := 0; i <4 ; i++ {
+		newSet[i] = value / s[i]
+	}
+	return newSet
+}
+func VectorMagnitude(s Set)  float64{
+	magnitude := 0.0
+	for i := 0; i < 4; i++ {
+		tmp := math.Pow(s[i],2)
+		magnitude = magnitude + tmp
+	}
+	return magnitude
+}
+
+func NormalizeMagnitude(s Set)  Set{
+	normalizedSet := Set{}
+
+	magnitude := VectorMagnitude(s)
+
+	for i := 0; i < 4; i++ {
+		normalizedSet[i] =s[i] / math.Sqrt(magnitude)
+	}
+	return normalizedSet
+}
+func Dot(v,v1 Set)  float64{
+	DotProduct := 0.0
+	for i := 0; i < 4; i++ {
+		DotProduct += v[i] * v1[i]
+	}
+	return DotProduct
+}
+func Cross(v,v1 Set)  Set{
+	newSet := Set{}
+
+	newSet[0] = v[1]*v1[2] - v[2]*v1[1]
+	newSet[1] = v[2]*v1[0] - v[0]*v1[2]
+	newSet[2] = v[0]*v1[1] - v[1]*v1[0]
+	newSet[3] = 0
+	return newSet
+}
+func Cross2(a *Set,b *Set,c *Set)  {
+	c[0] = a[1]*b[2] - a[2]*b[1]
+	c[1] = a[2]*b[0] - a[0]*b[2]
+	c[2] = a[0]*b[1] - a[1]*b[0]
 }
 
 
