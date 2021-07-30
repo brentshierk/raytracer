@@ -28,7 +28,9 @@ func (s Set) Point()  Set{
 
 }
 
-
+func NewColor(r, g, b float64) Set {
+	return Set{r, g, b, 1.0}
+}
 // NewVector creates a new vector
 func NewVector(x,y,z float64) Set{
 	return Set{x,y,z,0.0}
@@ -145,6 +147,7 @@ func Cross2(a *Set,b *Set,c *Set)  {
 	c[1] = a[2]*b[0] - a[0]*b[2]
 	c[2] = a[0]*b[1] - a[1]*b[0]
 }
+
 
 
 
