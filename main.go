@@ -12,7 +12,6 @@ func main(){
 
 projectileDemo()
 
-
 }
 func projectileDemo() {
 	VelocityVector := mat.NewVector(1,1.8,0)
@@ -23,13 +22,13 @@ func projectileDemo() {
 	prj := NewProjectile(p,v)
 	env := NewEnvironment(mat.NewVector(0, -0.1, 0), mat.NewVector(-0.01, 0, 0))
 	c := mat.NewCanvas(900, 550)
-	red := mat.NewColor(1, 1, 1)
+	green := mat.NewColor(0,250,154)
 	for prj.pos.Get(1) > 0.0 {
 		tick(prj, env)
 		//time.Sleep(time.Millisecond * 100)
 		fmt.Printf("Projectile pos %v at height %v with velocity %v\n", mat.VectorMagnitude(prj.pos), prj.pos.Get(1), prj.velocity)
 		fmt.Printf("Drawing at: %d %d\n", int(prj.pos.Get(0)), c.H-int(prj.pos.Get(1)))
-		c.WritePixel(int(prj.pos.Get(0)), c.H-int(prj.pos.Get(1)), red)
+		c.WritePixel(int(prj.pos.Get(0)), c.H-int(prj.pos.Get(1)), green)
 	}
 	fmt.Printf("Projectile flew %v\n", mat.VectorMagnitude(prj.pos))
 	data := c.ToPPM()
