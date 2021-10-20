@@ -39,6 +39,12 @@ func NewVector(x,y,z float64) Set{
 func NewPoint(x,y,z float64) Set{
 	return Set{x,y,z,1.0}
 }
+func NewSet() Set {
+	return [4]float64{0, 0, 0, 0}
+}
+func NewSetOf(x, y, z, w float64) Set {
+	return [4]float64{x, y, z, w}
+}
 func (s Set) IsVector()  bool{
 	return s[3] == 0.0
 }
@@ -49,12 +55,17 @@ func (s Set) Get(i int)  float64{
 	return s[i]
 }
 
-func Add(a,b Set) Set{
-	newSet := [4]float64{}
-	for i :=0;i<4;i++{
-		newSet[i] = a[i] +b[i]
+func Add(t1, t2 Set) Set {
+	t3 := [4]float64{}
+	for i := 0; i < 4; i++ {
+		t3[i] = t1[i] + t2[i]
 	}
-	return newSet
+	return t3
+}
+func AddPtr(t1, t2 Set, t3 *Set) {
+	for i := 0; i < 4; i++ {
+		t3[i] = t1[i] + t2[i]
+	}
 }
 
 func Subtract(s1, s2 Set) Set {
@@ -63,6 +74,11 @@ func Subtract(s1, s2 Set) Set {
 		s3[i] = s1[i] - s2[i]
 	}
 	return s3
+}
+func SubPtr(t1, t2 Set, out *Set) {
+	for i := 0; i < 4; i++ {
+		out[i] = t1[i] - t2[i]
+	}
 }
 // im subtracting each index of p,p1 p[3] has not changed "still 1.0"
 func SubPointFromPoint(p,p1 Set)  Set{
@@ -79,53 +95,82 @@ func SubVectorFromPoint(p,v Set)  Set{
 }
 func SubVectorFromVector(v,v1 Set)  Set{
 	newSet := Subtract(v,v1)
+	newSet = Subtract(v, v1)
 	newSet[3] = 0.0
 	return newSet
 }
-func NegateVector(v Set)  Set{
+func Negate(v Set)  Set{
 	zeroVector := NewVector(0,0,0)
 	newSet := Subtract(zeroVector,v)
 	return newSet
 }
-func NegateSet(a Set ) Set{
+func NegatePtr(a Set,out *Set ) Set{
 	zeroSet := [4]float64{}
 	negativeSet := Subtract(zeroSet,a)
 	return negativeSet
 }
 
-func Scaler(value float64,s Set)  Set{
+func Scalar(value Set,scalar float64)  Set{
 	newSet := [4]float64{}
 	for i := 0; i <4 ; i++ {
-		newSet[i] = value * s[i]
+		newSet[i] = value[i] * scalar
 	}
 	return newSet
-}
-func DivideSetScaler(value float64, s Set) Set{
-	newSet := [4]float64{}
-	for i := 0; i <4 ; i++ {
-		newSet[i] = value / s[i]
-	}
-	return newSet
-}
-func VectorMagnitude(s Set)  float64{
-	magnitude := 0.0
-	for i := 0; i < 4; i++ {
-		tmp := math.Pow(s[i],2)
-		magnitude = magnitude + tmp
-	}
-	return magnitude
 }
 
-func NormalizeMagnitude(s Set)  Set{
+func MultiplyByScalarPtr(t1 Set, scalar float64, out *Set) {
+	for i := 0; i < 4; i++ {
+		out[i] = t1[i] * scalar
+	}
+}
+
+func DivideByScalar(value Set, s float64) Set{
+	newSet := [4]float64{}
+	for i := 0; i <4 ; i++ {
+		newSet[i] = value[i] / s
+	}
+	return newSet
+}
+// Magnitude measures the length of the passed vector. It's basically pythagoras sqrt(x2 + y2 + z2 + w2)
+func Magnitude(t1 Set) float64 {
+	return math.Sqrt(t1[0]*t1[0] +
+		t1[1]*t1[1] +
+		t1[2]*t1[2])
+
+}
+
+func MagnitudePtr(t1 *Set) float64 {
+	return math.Sqrt(t1[0]*t1[0] +
+		t1[1]*t1[1] +
+		t1[2]*t1[2])
+
+}
+
+func Normalize(s Set)  Set{
 	normalizedSet := [4]float64{}
 
-	magnitude := VectorMagnitude(s)
+	magnitude := Magnitude(s)
 
 	for i := 0; i < 4; i++ {
 		normalizedSet[i] =s[i] / math.Sqrt(magnitude)
 	}
 	return normalizedSet
 }
+func NormalizePtr(t1 *Set, out *Set) {
+	magnitude := MagnitudePtr(t1)
+	var x, y, z, w float64
+
+	x = t1[0] / magnitude
+	y = t1[1] / magnitude
+	z = t1[2] / magnitude
+	w = t1[3] / magnitude
+
+	out[0] = x
+	out[1] = y
+	out[2] = z
+	out[3] = w
+}
+
 func Dot(v,v1 Set)  float64{
 	DotProduct := 0.0
 	for i := 0; i < 4; i++ {
@@ -171,7 +216,7 @@ func TupleEquals(t1, t2 Set) bool {
 		Eq(t1[3], t2[3])
 }
 
-func TupleXYZEq(t1, t2 Tuple4) bool {
+func TupleXYZEq(t1, t2 Set) bool {
 	return Eq(t1[0], t2[0]) &&
 		Eq(t1[1], t2[1]) &&
 		Eq(t1[2], t2[2])
