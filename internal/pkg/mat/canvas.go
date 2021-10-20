@@ -5,6 +5,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Canvas struct {
@@ -34,6 +35,30 @@ func (c *Canvas) WritePixel(col, row int, color Set) {
 	c.Pixels[c.toIdx(col, row)] = color
 }
 
+var mutex = sync.Mutex{}
+
+func (c *Canvas) WritePixelMutex(col, row int, color Set) {
+	if row < 0 || col < 0 || row >= c.H || col > c.W {
+		fmt.Println("pixel was out of bounds")
+		return
+	}
+	if row*col > c.MaxIndex {
+		fmt.Println("pixel was out of max bounds index bounds")
+		return
+	}
+	mutex.Lock()
+	c.Pixels[c.toIdx(col, row)] = color
+	mutex.Unlock()
+}
+
+func (c *Canvas) WritePixelToIndex(idx int, color Set) {
+	c.Pixels[idx] = color
+}
+
+func (c *Canvas) ColorAt(col, row int) Set {
+	return c.Pixels[c.toIdx(col, row)]
+}
+
 func (c *Canvas) ToPPM() string {
 
 	final := ""
@@ -55,6 +80,7 @@ func (c *Canvas) ToPPM() string {
 	}
 	return final
 }
+
 func clamp(color Set, buf *strings.Builder, written *int) {
 	for i := 0; i < 3; i++ {
 		c := color.Get(i) * 255.0

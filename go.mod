@@ -1,4 +1,4 @@
-module github.com/brentshierk/raytracer
+module github.com/brentshierk/raytracer/mat/tuple
 
 go 1.16
 
